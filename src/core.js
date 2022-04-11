@@ -13,7 +13,7 @@ import styleRules from './style.css.js'
 
 export class JSONEditor {
   constructor (element, options = {}) {
-    // console.log('JSONEditor object constructor call!')
+    console.log('core.js -> JSONEditor constructor()')
     if (!(element instanceof Element)) throw new Error('element should be an instance of Element')
 
     this.element = element

@@ -1,3 +1,4 @@
+/* eslint-disable */
 import { extend, hasOwnProperty } from './utilities.js'
 
 /**
@@ -111,6 +112,7 @@ export class AbstractEditor {
     }
 
     const deps = this.options.dependencies
+    console.log('deps: ', deps)
     if (!deps) {
       return
     }
@@ -124,6 +126,10 @@ export class AbstractEditor {
       path = path.join('.')
       const choices = deps[dependency]
       this.checkDependency(path, choices)
+      console.log('EVALUATE DEPENDENCIES')
+      console.log('path: ', path)
+      console.log('choices: ', choices)
+
     })
 
     if (this.dependenciesFulfilled !== previousStatus) {
@@ -142,16 +148,28 @@ export class AbstractEditor {
   }
 
   checkDependency (path, choices) {
+    console.log('PATH: ', path)
+    console.log('THIS.PATH: ', this.path)
+    console.log('CHOICES: ', choices)
+
+    // If dependent on self? or editor is undefined
     if (this.path === path || this.jsoneditor === null) {
-      return
+      return // ?
     }
 
+    // Set editor & value (which states if editor is defined)
     const editor = this.jsoneditor.getEditor(path)
     const value = editor ? editor.getValue() : undefined
 
+
+
+    // If no editor or editor's dependencies are not fulfilled
     if (!editor || !editor.dependenciesFulfilled) {
       this.dependenciesFulfilled = false
-    } else if (Array.isArray(choices)) {
+    }
+    
+    // Else-if choices is an array
+    else if (Array.isArray(choices)) {
       this.dependenciesFulfilled = choices.some(choice => {
         if (JSON.stringify(value) === JSON.stringify(choice)) {
           return true
