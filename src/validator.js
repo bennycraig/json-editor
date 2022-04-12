@@ -570,7 +570,7 @@ export class Validator {
   }
 
   validate (value) {
-    window.console.log('validator.js -> validate()')
+    // window.console.log('validator.js -> validate()')
     return this._validateSchema(this.schema, value)
   }
 
@@ -590,7 +590,7 @@ export class Validator {
     }
 
     Object.keys(schema).forEach(key => {
-      console.log('validator.js -> for each key in schema -> ', key)
+      // console.log('validator.js -> for each key in schema -> ', key)
       if (this._validateSubSchema[key]) {
         errors.push(...this._validateSubSchema[key].call(this, schema, value, path))
       }

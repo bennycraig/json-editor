@@ -103,6 +103,7 @@ export class AbstractEditor {
         this.evaluateDependencies()
       })
     })
+    console.log("\n")
   }
 
   evaluateDependencies () {
@@ -112,13 +113,15 @@ export class AbstractEditor {
     }
 
     const deps = this.options.dependencies
-    console.log('deps: ', deps)
     if (!deps) {
       return
     }
     // Assume true and set to false if any unmet dependencies are found
     const previousStatus = this.dependenciesFulfilled
     this.dependenciesFulfilled = true
+    console.log('EVALUATE deps')
+    console.log("deps: ", deps)
+    console.log('\n')
 
     Object.keys(deps).forEach(dependency => {
       let path = this.path.split('.')
@@ -127,8 +130,11 @@ export class AbstractEditor {
       const choices = deps[dependency]
       this.checkDependency(path, choices)
       console.log('EVALUATE DEPENDENCIES')
-      console.log('path: ', path)
-      console.log('choices: ', choices)
+      console.log("ELEMENT: ", dependency)
+      console.log("PATH: ", path)
+      console.log("CHOICES: ", choices)
+      console.log("TYPEOF CHOICES: ", typeof choices)
+      console.log('\n')
 
     })
 
@@ -147,11 +153,40 @@ export class AbstractEditor {
     } else wrapper.style.display = displayMode
   }
 
-  checkDependency (path, choices) {
-    console.log('PATH: ', path)
-    console.log('THIS.PATH: ', this.path)
-    console.log('CHOICES: ', choices)
+  //CHOICES is the criteria that must be fulfilled
+  //VALUE is the value of the independent variable
+  /*
+  {
+    "title": "An object",
+    "type": "object",
+    "properties": {
+      "fieldOne": {
+        "title": "I should be changed to 'foo'",
+        "type": "string",
+        "enum": ["foo","bar"],
+        "default": "bar"                 //VALUE
+      },
+      "depender1": {
+        "title": "I depend on fieldOne to be 'foo'",
+        "type": "string",
+        "enum": ["lorem","ipsum"],
+        "options": {
+          "dependencies": {
+            "fieldOne": "foo"            //CHOICES
+          }
 
+          "dependencies": {
+            "fieldOne": {
+              "pattern" : "REGEX"
+            }
+          }
+        }
+      },
+    }
+  }
+  */
+  // this.dependenciesFulfilled sets the visibility of a field
+  checkDependency (path, choices) {
     // If dependent on self? or editor is undefined
     if (this.path === path || this.jsoneditor === null) {
       return // ?
@@ -160,7 +195,9 @@ export class AbstractEditor {
     // Set editor & value (which states if editor is defined)
     const editor = this.jsoneditor.getEditor(path)
     const value = editor ? editor.getValue() : undefined
-
+    // console.log("EDITOR: ", editor)
+    console.log("VALUE of Independent variable: ", value)
+    console.log('\n')
 
 
     // If no editor or editor's dependencies are not fulfilled
@@ -176,10 +213,14 @@ export class AbstractEditor {
         }
       })
     } else if (typeof choices === 'object') {
+      //choices is an object (IMPLEMENT HERE)
       if (typeof value !== 'object') {
         this.dependenciesFulfilled = choices === value
       } else {
         Object.keys(choices).some(key => {
+          console.log ("checking for patterns now.")
+          console.log("KEY: ", key)
+          console.log("CHOICES: ", choices)
           if (!hasOwnProperty(choices, key)) {
             return false
           }
