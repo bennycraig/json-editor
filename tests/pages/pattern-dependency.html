@@ -16,6 +16,40 @@
 
 <script>
   var jsonEditorContainer = document.querySelector('.json-editor-container');
+  var easyExampleSchema = {
+  "title": "Easy to Understand Dependency Example",
+  "type": "object",
+  "properties": {
+    "Animal": {
+      "title": "Pick an animal",
+      "type": "string",
+      // Providing enum options turns this into a drop-down
+    //   "enum": ["Dog","Cat"],
+      "default": "Dog"
+    },
+    "depender1": {
+      "title": "Type of dog",
+      "type": "string",
+      "enum": ["Labrador","Poodle"],
+      "options": {
+        "dependencies": {
+          "Animal": "Dog"
+        }
+      }
+    },
+    "depender2": {
+      "title": "Type of cat",
+      "type": "string",
+      "enum": ["Siamese", "Persian"],
+      "options": {
+        "dependencies": {
+          "Animal": "Cat"
+        }
+      }
+    }
+  }
+}
+  
   var depSchema = {
   "title": "An object",
   "type": "object",
@@ -70,39 +104,34 @@
       "title": "Cloud",
       "type": "string",
       "description": "Cloud in VMM",
+      "enum": ["one", "two"],
       "options": {
         "dependencies": {
           "ServerName": {
             "pattern": "^(AA)-[0-99]{2}$"
           }
-        },
-        "enum": [
-          "one",
-          "two"
-        ]
+        }
+        
       }
     },
     "Cloud2": {
       "title": "Cloud",
       "type": "string",
       "description": "Cloud in VMM",
+      "enum": ["three", "four"],
       "options": {
         "dependencies": {
           "ServerName": {
             "pattern": "^(BB)-[0-99]{2}$"
           }
-        },
-        "enum": [
-          "three",
-          "four"
-        ]
+        }
       }
     }
   }
 }
 
   var editor = new JSONEditor(jsonEditorContainer, {
-    schema: depSchema,
+    schema: schema,
     theme: 'bootstrap4',
     use_default_values: false,
     required_by_default: true,
