@@ -95,15 +95,19 @@ export class AbstractEditor {
       return
     }
 
+    console.log('REGISTER DEPENDENCIES FUNCTION: ')
     Object.keys(deps).forEach(dependency => {
       let path = this.path.split('.')
+      console.log('ELEMENT PATH: ', this.path)
+      console.log('ELEMENT: ', path[path.length - 1])      
+      console.log('DEPENDENCY: ', dependency)
       path[path.length - 1] = dependency
       path = path.join('.')
       this.jsoneditor.watch(path, () => {
         this.evaluateDependencies()
       })
     })
-    console.log("\n")
+    console.log("-----------\n")
   }
 
   evaluateDependencies () {
@@ -116,25 +120,26 @@ export class AbstractEditor {
     if (!deps) {
       return
     }
+
+    console.log('EVALUATE DEPENDENCIES FUNCTION: ')
+
     // Assume true and set to false if any unmet dependencies are found
     const previousStatus = this.dependenciesFulfilled
     this.dependenciesFulfilled = true
-    console.log('EVALUATE deps')
     console.log("deps: ", deps)
     console.log('\n')
 
     Object.keys(deps).forEach(dependency => {
       let path = this.path.split('.')
+      console.log('ELEMENT: ', path[path.length - 1])      
       path[path.length - 1] = dependency
       path = path.join('.')
       const choices = deps[dependency]
-      this.checkDependency(path, choices)
-      console.log('EVALUATE DEPENDENCIES')
-      console.log("ELEMENT: ", dependency)
-      console.log("PATH: ", path)
+      console.log("DEPENDENCY: ", dependency)
       console.log("CHOICES: ", choices)
       console.log("TYPEOF CHOICES: ", typeof choices)
       console.log('\n')
+      this.checkDependency(path, choices)
 
     })
 
@@ -151,6 +156,7 @@ export class AbstractEditor {
     if (wrapper.tagName === 'TD') {
       Object.keys(wrapper.childNodes).forEach(child => (wrapper.childNodes[child].style.display = displayMode))
     } else wrapper.style.display = displayMode
+    console.log("-----------\n")
   }
 
   //CHOICES is the criteria that must be fulfilled
@@ -187,6 +193,7 @@ export class AbstractEditor {
   */
   // this.dependenciesFulfilled sets the visibility of a field
   checkDependency (path, choices) {
+    console.log('CHECK DEPENDENCY FUNCTION:')
     // If dependent on self? or editor is undefined
     if (this.path === path || this.jsoneditor === null) {
       return // ?
@@ -212,13 +219,29 @@ export class AbstractEditor {
           return true
         }
       })
+
+    // choices is an object (IMPLEMENT HERE)
     } else if (typeof choices === 'object') {
-      //choices is an object (IMPLEMENT HERE)
-      if (typeof value !== 'object') {
-        this.dependenciesFulfilled = choices === value
+      console.log('CHOICES IS AN OBJECT')
+      // if there is a pattern in the choices object
+      let pattern = choices.pattern
+
+      if(pattern){
+        console.log('choices.pattern:', choices.pattern)
+        let regex = new RegExp(pattern)
+        console.log('Looking to see if "value" matches "pattern"')
+
+        // If the independent value matches pattern
+        this.dependenciesFulfilled = regex.test(value)
+        // if(regex.test(value)){
+        //   this.dependenciesFulfilled = true
+        // } else this.dependenciesFulfilled = false
+
+      } else if (typeof value !== 'object') {
+          this.dependenciesFulfilled = choices === value
       } else {
         Object.keys(choices).some(key => {
-          console.log ("checking for patterns now.")
+          console.log ("checking for patterns now.") // Never executed
           console.log("KEY: ", key)
           console.log("CHOICES: ", choices)
           if (!hasOwnProperty(choices, key)) {
@@ -229,16 +252,21 @@ export class AbstractEditor {
             return true
           }
         })
-      }
-    } else if (typeof choices === 'string' || typeof choices === 'number') {
+        }
+    } 
+    
+    else if (typeof choices === 'string' || typeof choices === 'number') {
       this.dependenciesFulfilled = this.dependenciesFulfilled && value === choices
-    } else if (typeof choices === 'boolean') {
+    } 
+    
+    else if (typeof choices === 'boolean') {
       if (choices) {
         this.dependenciesFulfilled = this.dependenciesFulfilled && (value || value.length > 0)
       } else {
         this.dependenciesFulfilled = this.dependenciesFulfilled && (!value || value.length === 0)
       }
     }
+    console.log("-----------\n")
   }
 
   setContainer (container) {
