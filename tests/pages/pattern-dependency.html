@@ -23,8 +23,6 @@
     "Animal": {
       "title": "Pick an animal",
       "type": "string",
-      // Providing enum options turns this into a drop-down
-    //   "enum": ["Dog","Cat"],
       "default": "Dog"
     },
     "depender1": {
@@ -94,14 +92,14 @@
       "type": "string",
       "title": "Server Name",
       "description": "Name of the Server",
-      "pattern": "^(AA|BB)-[0-99]{2}$",
+      "pattern": "^(AA|BB|CC)-[0-99]{2}$",
       "examples": [
         "AA-01",
         "BB-55"
       ]
     },
-    "Cloud": {
-      "title": "Cloud",
+    "Cloud1": {
+      "title": "Cloud1",
       "type": "string",
       "description": "Cloud in VMM",
       "enum": ["one", "two"],
@@ -115,7 +113,7 @@
       }
     },
     "Cloud2": {
-      "title": "Cloud",
+      "title": "Cloud2",
       "type": "string",
       "description": "Cloud in VMM",
       "enum": ["three", "four"],
@@ -123,6 +121,19 @@
         "dependencies": {
           "ServerName": {
             "pattern": "^(BB)-[0-99]{2}$"
+          }
+        }
+      }
+    },
+    "Cloud3": {
+      "title": "Cloud3",
+      "type": "string",
+      "description": "Cloud in VMM",
+      "enum": ["three", "four"],
+      "options": {
+        "dependencies": {
+          "ServerName": {
+            "pattern": "^(CC)-[0-99]{2}$"
           }
         }
       }
